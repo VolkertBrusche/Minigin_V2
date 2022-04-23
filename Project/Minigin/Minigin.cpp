@@ -94,12 +94,32 @@ void dae::Minigin::Run()
 		auto& input = InputManager::GetInstance();
 
 		// todo: this update loop could use some work.
+		auto lastTime = chrono::high_resolution_clock::now();
+		float deltaTime{};
+
 		bool doContinue = true;
+		float lag = 0.0f;
 		while (doContinue)
 		{
+			const auto currentTime = chrono::high_resolution_clock::now();
+			deltaTime = chrono::duration<float>(currentTime - lastTime).count();
+			lastTime = currentTime;
+			lag += deltaTime;
+
 			doContinue = input.ProcessInput();
-			sceneManager.Update();
+			sceneManager.Update(/*deltaTime*/);
+
+			//SteamAPI_RunCallbacks();
+
+			while (lag >= m_TimeStamp)
+			{
+				sceneManager.FixedUpdate(/*m_TimeStamp*/);
+				lag -= m_TimeStamp;
+			}
 			renderer.Render();
+
+			auto sleepTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTime + std::chrono::milliseconds(MsPerFrame) - std::chrono::high_resolution_clock::now());
+			std::this_thread::sleep_for(sleepTime);
 		}
 	}
 
