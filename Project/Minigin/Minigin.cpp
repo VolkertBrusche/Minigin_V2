@@ -5,9 +5,15 @@
 #include "SceneManager.h"
 #include "Renderer.h"
 #include "ResourceManager.h"
-#include "TextObject.h"
 #include "GameObject.h"
 #include "Scene.h"
+
+//Game Components ================
+#include "TextComponent.h"
+#include "TextureComponent.h"
+#include "TransformComponent.h"
+#include "FPSComponent.h"
+//================================
 
 using namespace std;
 
@@ -54,21 +60,50 @@ void dae::Minigin::Initialize()
  */
 void dae::Minigin::LoadGame() const
 {
-	auto& scene = SceneManager::GetInstance().CreateScene("Demo");
+	std::shared_ptr<Scene> scene = SceneManager::GetInstance().CreateScene("Demo");
+	if (scene)
+	{
+		std::shared_ptr<GameObject> backgroundObject = std::make_shared<GameObject>();
+		std::shared_ptr<TextureComponent> textureComponent = std::make_shared<TextureComponent>(backgroundObject);
+		textureComponent->SetTexture("background.jpg");
+		backgroundObject->AddComponent(textureComponent);
 
-	auto go = std::make_shared<GameObject>();
-	go->SetTexture("background.jpg");
-	scene.Add(go);
+		std::shared_ptr<GameObject> logoObject = std::make_shared<GameObject>();
+		textureComponent = std::make_shared<TextureComponent>(logoObject);
+		textureComponent->SetTexture("logo.png");
+		logoObject->AddComponent(textureComponent);
+		logoObject->GetComponent<TransformComponent>()->SetPosition(216, 180);
+		scene->Add(logoObject);
 
-	go = std::make_shared<GameObject>();
-	go->SetTexture("logo.png");
-	go->SetPosition(216, 180);
-	scene.Add(go);
+		std::shared_ptr<GameObject> titleObject = std::make_shared<GameObject>();
+		auto titleFont = ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
+		std::shared_ptr<TextComponent> textComponent = std::make_shared<TextComponent>("Programming 4 Assignment", titleFont, titleObject);
+		titleObject->AddComponent(textComponent);
+		titleObject->GetComponent<TransformComponent>()->SetPosition(80, 20);
+		scene->Add(titleObject);
 
-	auto font = ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
-	auto to = std::make_shared<TextObject>("Programming 4 Assignment", font);
-	to->SetPosition(80, 20);
-	scene.Add(to);
+		std::shared_ptr<GameObject> FPSObject = std::make_shared<GameObject>();
+		auto FPSFont = ResourceManager::GetInstance().LoadFont("Lingua.otf", 18);
+		std::shared_ptr<FPSComponent> fpsComponent = std::make_shared<FPSComponent>("00 FPS", FPSFont, FPSObject);
+		FPSObject->AddComponent(fpsComponent);
+		FPSObject->GetComponent<TextComponent>()->SetColor({ 255,255,0 });
+		FPSObject->GetComponent<TransformComponent>()->SetPosition(10, 10);
+		scene->Add(FPSObject);
+	}
+
+	//auto go = std::make_shared<GameObject>();
+	//go->SetTexture("background.jpg");
+	//scene.Add(go);
+
+	//go = std::make_shared<GameObject>();
+	//go->SetTexture("logo.png");
+	//go->SetPosition(216, 180);
+	//scene.Add(go);
+
+	//auto font = ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
+	//auto to = std::make_shared<TextObject>("Programming 4 Assignment", font);
+	//to->SetPosition(80, 20);
+	//scene.Add(to);
 }
 
 void dae::Minigin::Cleanup()
@@ -107,13 +142,13 @@ void dae::Minigin::Run()
 			lag += deltaTime;
 
 			doContinue = input.ProcessInput();
-			sceneManager.Update(/*deltaTime*/);
+			sceneManager.Update(deltaTime);
 
 			//SteamAPI_RunCallbacks();
 
 			while (lag >= m_TimeStamp)
 			{
-				sceneManager.FixedUpdate(/*m_TimeStamp*/);
+				sceneManager.FixedUpdate(m_TimeStamp);
 				lag -= m_TimeStamp;
 			}
 			renderer.Render();
