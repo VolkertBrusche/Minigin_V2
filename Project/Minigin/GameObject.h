@@ -35,8 +35,6 @@ namespace dae
 
 		size_t GetChildCount() const;
 		std::shared_ptr<GameObject> GetChildAt(size_t idx);
-		void RemoveChild(std::shared_ptr<GameObject> child);
-		void AddChild(std::shared_ptr<GameObject> child);
 
 		GameObject() = default;
 		virtual ~GameObject();

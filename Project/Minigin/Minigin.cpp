@@ -89,21 +89,20 @@ void dae::Minigin::LoadGame() const
 		FPSObject->GetComponent<TextComponent>()->SetColor({ 255,255,0 });
 		FPSObject->GetComponent<TransformComponent>()->SetPosition(10, 10);
 		scene->Add(FPSObject);
+
+		//Parenting test
+		std::shared_ptr<GameObject> go1 = std::make_shared<GameObject>();
+		std::shared_ptr<GameObject> go2 = std::make_shared<GameObject>();
+		std::shared_ptr<GameObject> go3 = std::make_shared<GameObject>();
+
+		go1->SetParent(go2);
+		go2->SetParent(go3);
+		go2->SetParent(go1);
+		go2->SetParent(nullptr);
+		go1->SetParent(nullptr);
+		go3->SetParent(go1);
+		go3->SetParent(nullptr);
 	}
-
-	//auto go = std::make_shared<GameObject>();
-	//go->SetTexture("background.jpg");
-	//scene.Add(go);
-
-	//go = std::make_shared<GameObject>();
-	//go->SetTexture("logo.png");
-	//go->SetPosition(216, 180);
-	//scene.Add(go);
-
-	//auto font = ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
-	//auto to = std::make_shared<TextObject>("Programming 4 Assignment", font);
-	//to->SetPosition(80, 20);
-	//scene.Add(to);
 }
 
 void dae::Minigin::Cleanup()

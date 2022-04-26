@@ -27,28 +27,6 @@ void dae::SceneManager::Render()
 	}
 }
 
-void dae::SceneManager::AddGameObjectToSceneName(const std::string& sceneName, std::shared_ptr<GameObject> gameObject)
-{
-	for (std::shared_ptr<Scene> scene : m_Scenes)
-	{
-		if (scene->GetSceneName() == sceneName)
-		{
-			scene->Add(gameObject);
-		}
-	}
-}
-
-void dae::SceneManager::RemoveGameObjectFromSceneName(const std::string& sceneName, std::shared_ptr<GameObject> gameObject)
-{
-	for (std::shared_ptr<Scene> scene : m_Scenes)
-	{
-		if (scene->GetSceneName() == sceneName)
-		{
-			scene->Remove(gameObject);
-		}
-	}
-}
-
 std::shared_ptr<dae::Scene> dae::SceneManager::CreateScene(const std::string& name)
 {
 	const auto& newScene = std::shared_ptr<Scene>(new Scene(name));

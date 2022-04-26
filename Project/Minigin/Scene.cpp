@@ -15,11 +15,6 @@ void Scene::Add(const std::shared_ptr<GameObject>& object)
 	m_Objects.push_back(object);
 }
 
-void dae::Scene::Remove(const std::shared_ptr<GameObject>& object)
-{
-	m_Objects.erase(std::find(m_Objects.begin(), m_Objects.end(), object));
-}
-
 void Scene::Update(float deltaTime)
 {
 	for(auto& object : m_Objects)

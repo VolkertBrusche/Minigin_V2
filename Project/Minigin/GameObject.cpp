@@ -12,10 +12,10 @@ void dae::GameObject::Update(float deltaTime)
 		pComponent->Update(deltaTime);
 	}
 
-	for (auto pChildren : m_pChildren)
-	{
-		pChildren->Update(deltaTime);
-	}
+	//for (auto pChildren : m_pChildren)
+	//{
+	//	pChildren->Update(deltaTime);
+	//}
 }
 
 void dae::GameObject::FixedUpdate(float fixedTimeStamp)
@@ -25,10 +25,10 @@ void dae::GameObject::FixedUpdate(float fixedTimeStamp)
 		pComponent->FixedUpdate(fixedTimeStamp);
 	}
 
-	for (auto pChildren : m_pChildren)
-	{
-		pChildren->FixedUpdate(fixedTimeStamp);
-	}
+	//for (auto pChildren : m_pChildren)
+	//{
+	//	pChildren->FixedUpdate(fixedTimeStamp);
+	//}
 }
 
 void dae::GameObject::Render() const
@@ -38,10 +38,10 @@ void dae::GameObject::Render() const
 		pComponent->Render();
 	}
 
-	for (auto pChildren : m_pChildren)
-	{
-		pChildren->Render();
-	}
+	//for (auto pChildren : m_pChildren)
+	//{
+	//	pChildren->Render();
+	//}
 }
 
 void dae::GameObject::AddComponent(std::shared_ptr<BaseComponent> component)
@@ -58,21 +58,17 @@ void dae::GameObject::RemoveComponent(std::shared_ptr<BaseComponent> component)
 
 void dae::GameObject::SetParent(std::shared_ptr<GameObject> parent)
 {
-	if (parent != nullptr)
-	{
-		if (std::find(m_pChildren.begin(), m_pChildren.end(), parent) == m_pChildren.end()) //Checks if the parent is in the children of this gameobject
-																							//Avoids parents linking parents
+	if (std::find(m_pChildren.begin(), m_pChildren.end(), parent) == m_pChildren.end()) //Checks if the parent is in the children of this gameobject
+	{																					//Avoids parents linking parents
+		if (m_pParent.lock() != nullptr) //Checks if current parent is occupied
 		{
-			if (m_pParent.lock() != nullptr) //Checks if current parent is occupied
-				m_pParent.lock()->RemoveChild(shared_from_this()); //Removes this gameobject from the children from that parent if so
-
-			m_pParent = parent; //Sets the new parent
-			parent->AddChild(shared_from_this()); //Adds the gameobject in the children of the parent
+			m_pParent.lock()->m_pChildren.erase(std::find(m_pParent.lock()->m_pChildren.begin(), m_pParent.lock()->m_pChildren.end(), shared_from_this())); //Removes this gameobject from the children from that parent if so
 		}
-	}
-	else
-	{
-		m_pParent = parent;
+			
+		m_pParent = parent; //Sets the new parent
+
+		if (parent != nullptr)
+			parent->m_pChildren.push_back(shared_from_this()); //Adds the gameobject in the children of the parent
 	}
 }
 
@@ -93,23 +89,4 @@ std::shared_ptr<dae::GameObject> dae::GameObject::GetChildAt(size_t idx)
 		return m_pChildren[idx];
 	}
 	return nullptr;
-}
-
-void dae::GameObject::RemoveChild(std::shared_ptr<GameObject> child)
-{
-	if (child != nullptr)
-	{
-		m_pChildren.erase(std::find(m_pChildren.begin(), m_pChildren.end(), child));
-		child->SetParent(nullptr);
-	}
-}
-
-void dae::GameObject::AddChild(std::shared_ptr<GameObject> child)
-{
-	if (child != nullptr && std::find(m_pChildren.begin(), m_pChildren.end(), child) == m_pChildren.end() && child != shared_from_this())
-	{
-		child->GetParent()->RemoveChild(child);
-		child->SetParent(shared_from_this());
-		m_pChildren.push_back(child);
-	}
 }
