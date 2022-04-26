@@ -9,6 +9,7 @@ namespace dae
 	{
 	public:
 		std::shared_ptr<Scene> CreateScene(const std::string& name);
+		std::shared_ptr<Scene> GetSceneByName(const std::string& name);
 
 		void Update(float deltaTime);
 		void FixedUpdate(float fixedTime);

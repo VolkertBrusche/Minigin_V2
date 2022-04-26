@@ -39,3 +39,13 @@ std::shared_ptr<dae::Scene> dae::SceneManager::CreateScene(const std::string& na
 	m_Scenes.push_back(newScene);
 	return newScene;
 }
+
+std::shared_ptr<dae::Scene> dae::SceneManager::GetSceneByName(const std::string& name)
+{
+	for (std::shared_ptr<dae::Scene> scene : m_Scenes)
+	{
+		if (scene->GetSceneName() == name)
+			return scene;
+	}
+	return nullptr;
+}

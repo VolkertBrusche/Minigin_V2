@@ -1,40 +1,57 @@
 #include "MiniginPCH.h"
 #include "InputManager.h"
 
+dae::InputManager::InputManager()
+{
+	m_pXboxController[0] = new XBox360Controller(0);
+}
+
+dae::InputManager::~InputManager()
+{
+	for (XBox360Controller* pController : m_pXboxController)
+	{
+		delete pController;
+	}
+}
+
 bool dae::InputManager::ProcessInput()
 {
-	ZeroMemory(&m_CurrentState, sizeof(XINPUT_STATE));
-	XInputGetState(0, &m_CurrentState);
+	// todo: read the input;
 
-	SDL_Event e;
-	while (SDL_PollEvent(&e)) {
-		if (e.type == SDL_QUIT) {
-			return false;
+	for (size_t controllerIdx{}; controllerIdx < XUSER_MAX_COUNT; ++controllerIdx)
+	{
+		if (m_pXboxController[controllerIdx] == nullptr) //If there was not a controller initialized on that idx, continue
+			continue;
+
+		m_pXboxController[controllerIdx]->Update();
+		for (ControllerCommandMap::iterator controllerIt = m_ConsoleCommands.begin(); controllerIt != m_ConsoleCommands.end(); ++controllerIt)
+		{
+			if (controllerIt->first.first != controllerIdx) //Checks if the current command isn't meant for the current controllerIdx
+				continue;
+
+			if (m_pXboxController[controllerIdx]->IsPressed(controllerIt->first.second) && controllerIt->second.second == CommandState::Pressed ||
+				m_pXboxController[controllerIdx]->IsDown(controllerIt->first.second) && controllerIt->second.second == CommandState::Down ||
+				m_pXboxController[controllerIdx]->IsUp(controllerIt->first.second) && controllerIt->second.second == CommandState::Up)
+				if (controllerIt->second.first)
+					controllerIt->second.first->Execute();
+
+			//Quick and dirty solution for ending the program
+			if (m_pXboxController[controllerIdx]->IsPressed(XBox360Controller::ControllerButton::Back))
+				return false;
 		}
-		if (e.type == SDL_KEYDOWN) {
-			
-		}
-		if (e.type == SDL_MOUSEBUTTONDOWN) {
-			
-		}
+
 	}
-
 	return true;
 }
 
-bool dae::InputManager::IsPressed(ControllerButton button) const
+void dae::InputManager::SetButtonCommand(unsigned int controllerIndex, XBox360Controller::ControllerButton button, Command* command, CommandState state)
 {
-	switch (button)
-	{
-	case ControllerButton::ButtonA:
-		return m_CurrentState.Gamepad.wButtons & XINPUT_GAMEPAD_A;
-	case ControllerButton::ButtonB:
-		return m_CurrentState.Gamepad.wButtons & XINPUT_GAMEPAD_B;
-	case ControllerButton::ButtonX:
-		return m_CurrentState.Gamepad.wButtons & XINPUT_GAMEPAD_X;
-	case ControllerButton::ButtonY:
-		return m_CurrentState.Gamepad.wButtons & XINPUT_GAMEPAD_Y;
-	default: return false;
-	}
+	m_ConsoleCommands[ControllerKey(controllerIndex, button)] = std::pair(std::unique_ptr<Command>(command), state);
+}
+
+void dae::InputManager::RemoveButtonCommand(unsigned int controllerIndex, XBox360Controller::ControllerButton button)
+{
+	m_ConsoleCommands[ControllerKey(controllerIndex, button)].first = nullptr;
+	m_ConsoleCommands[ControllerKey(controllerIndex, button)].second = CommandState::Pressed;
 }
 
