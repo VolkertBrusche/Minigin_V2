@@ -3,6 +3,7 @@
 #include <memory>
 #include <map>
 #include <array>
+#include <deque>
 #include "Commands.h"
 #include "XBox360Controller.h"
 
@@ -41,6 +42,9 @@ namespace dae
 		std::array<XBox360Controller*, XUSER_MAX_COUNT> m_pXboxController;
 
 		ControllerCommandMap m_ConsoleCommands{};
+
+		std::deque<Command*> m_pCommands;
+		size_t m_MaxUndo{ 50 };
 	};
 
 }

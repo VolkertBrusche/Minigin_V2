@@ -9,9 +9,9 @@ dae::InputManager::InputManager()
 dae::InputManager::~InputManager()
 {
 	for (XBox360Controller* pController : m_pXboxController)
-	{
 		delete pController;
-	}
+
+	m_pCommands.clear();
 }
 
 bool dae::InputManager::ProcessInput()
@@ -33,13 +33,24 @@ bool dae::InputManager::ProcessInput()
 				m_pXboxController[controllerIdx]->IsDown(controllerIt->first.second) && controllerIt->second.second == CommandState::Down ||
 				m_pXboxController[controllerIdx]->IsUp(controllerIt->first.second) && controllerIt->second.second == CommandState::Up)
 				if (controllerIt->second.first)
+				{
 					controllerIt->second.first->Execute();
 
-			//Quick and dirty solution for ending the program
-			if (m_pXboxController[controllerIdx]->IsPressed(XBox360Controller::ControllerButton::Back))
-				return false;
+					m_pCommands.push_front(controllerIt->second.first.get());
+					if (m_pCommands.size() > m_MaxUndo)
+						m_pCommands.pop_back();
+				}
+		}
+		//Quick way to undo commands
+		if (m_pXboxController[controllerIdx]->IsDown(XBox360Controller::ControllerButton::DPadDown) && m_pCommands.size() > 0)
+		{
+			m_pCommands.back()->Undo();
+			m_pCommands.pop_back();
 		}
 
+		//Quick and dirty solution for ending the program
+		if (m_pXboxController[controllerIdx]->IsPressed(XBox360Controller::ControllerButton::Back))
+			return false;
 	}
 	return true;
 }
