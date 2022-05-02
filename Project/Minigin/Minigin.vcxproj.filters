@@ -75,6 +75,12 @@
     <ClInclude Include="Commands.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Observer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Subject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MiniginPCH.cpp">
@@ -129,6 +135,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Commands.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Observer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Subject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
