@@ -6,6 +6,8 @@
 #include "Texture2D.h"
 #include "GameObject.h"
 #include "TransformComponent.h"
+#include "HealthComponent.h"
+#include "PointsComponent.h"
 
 dae::TextComponent::TextComponent(const std::string& text, const std::shared_ptr<Font>& font,std::shared_ptr<GameObject> gameObject)
 	:BaseComponent{gameObject}, m_NeedsUpdate(true), m_Text(text), m_Font(font), m_TextTexture(nullptr), m_Color{255,255,255}
@@ -52,6 +54,17 @@ void dae::TextComponent::Render() const
 
 	const auto& pos = m_TransformComponent->GetPosition();
 	Renderer::GetInstance().RenderTexture(*m_TextTexture, pos.x, pos.y);
+}
+
+void dae::TextComponent::Notify(const std::shared_ptr<GameObject> pGameObject, Event event)
+{
+	auto healthComp = pGameObject->GetComponent<HealthComponent>();
+	if (healthComp && event == Event::LivesChanged)
+		SetText(std::to_string(healthComp->GetLives()));
+
+	auto pointsComp = pGameObject->GetComponent<PointsComponent>();
+	if (pointsComp && event == Event::PointsChanged)
+		SetText(std::to_string(pointsComp->GetPoints()));
 }
 
 // This implementation uses the "dirty flag" pattern

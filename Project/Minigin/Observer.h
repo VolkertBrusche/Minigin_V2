@@ -14,7 +14,7 @@ namespace dae
 	{
 	public:
 		virtual ~Observer() = default;
-		virtual void Notify(const GameObject& gameObject, Event event) = 0;
+		virtual void Notify(const std::shared_ptr<GameObject> pGameObject, Event event) = 0;
 	};
 }
 

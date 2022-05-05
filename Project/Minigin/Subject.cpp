@@ -2,20 +2,20 @@
 #include "Subject.h"
 #include <algorithm>
 
-void dae::Subject::AddObserver(Observer* observer)
+void dae::Subject::AddObserver(std::shared_ptr<Observer> observer)
 {
 	m_pObservers.push_back(observer);
 }
 
-void dae::Subject::RemoveObserver(Observer* observer)
+void dae::Subject::RemoveObserver(std::shared_ptr<Observer> observer)
 {
 	m_pObservers.erase(std::find(m_pObservers.begin(), m_pObservers.end(), observer));
 }
 
-void dae::Subject::Notify(const GameObject& gameObject, Event event)
+void dae::Subject::Notify(const std::shared_ptr<GameObject> pGameObject, Event event)
 {
-	for (Observer* observer : m_pObservers)
+	for (std::shared_ptr<Observer> observer : m_pObservers)
 	{
-		observer->Notify(gameObject, event);
+		observer->Notify(pGameObject, event);
 	}
 }

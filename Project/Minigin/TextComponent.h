@@ -1,5 +1,6 @@
 #pragma once
 #include "BaseComponent.h"
+#include "Observer.h"
 
 namespace dae
 {
@@ -7,11 +8,13 @@ namespace dae
 	class Texture2D;
 	class GameObject;
 	class TransformComponent;
-	class TextComponent final : public BaseComponent, public std::enable_shared_from_this<TextComponent>
+	class TextComponent final : public BaseComponent, public std::enable_shared_from_this<TextComponent>, public Observer
 	{
 	public:
 		virtual void Update(float deltaTime) override;
 		virtual void Render() const override;
+
+		virtual void Notify(const std::shared_ptr<GameObject> pGameObject, Event event) override;
 
 		void SetText(const std::string& text);
 		void SetColor(const SDL_Color color);

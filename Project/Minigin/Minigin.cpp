@@ -13,6 +13,8 @@
 #include "TextureComponent.h"
 #include "TransformComponent.h"
 #include "FPSComponent.h"
+#include "HealthComponent.h"
+#include "PointsComponent.h"
 //================================
 
 #include "Commands.h"
@@ -68,6 +70,7 @@ void dae::Minigin::LoadGame() const
 	CreateFPSCounter();
 	TestParenting();
 	TestInput();
+	TestObserverAndSubject();
 }
 
 void dae::Minigin::Cleanup()
@@ -193,4 +196,56 @@ void dae::Minigin::TestInput() const
 	input.SetButtonCommand(0, XBox360Controller::ControllerButton::ButtonY, new SwapGunCommand(), CommandState::Down);
 	input.SetButtonCommand(0, XBox360Controller::ControllerButton::DPadLeft, new SwapGunCommand(), CommandState::Down);
 	input.RemoveButtonCommand(0, XBox360Controller::ControllerButton::DPadLeft);
+}
+
+void dae::Minigin::TestObserverAndSubject() const
+{
+	std::shared_ptr<Scene> scene = SceneManager::GetInstance().GetSceneByName("Demo");
+
+	if (scene)
+	{
+		auto textFont = ResourceManager::GetInstance().LoadFont("Lingua.otf", 18);
+		auto healthP1 = CreateHealthWithText(scene, 5, textFont, { 255, 0, 0 }, 10.f, 200.f);
+		auto healthP2 = CreateHealthWithText(scene, 5, textFont, { 255, 0, 0 }, 10.f, 270.f);
+		auto pointsP1 = CreatePointsWithText(scene, textFont, { 0, 255, 0 }, 10.f, 220.f);
+		auto pointsP2 = CreatePointsWithText(scene, textFont, { 0, 255, 0 }, 10.f, 290.f);
+
+		//Adding commands (TEMP)
+		auto& input = InputManager::GetInstance();
+		input.SetButtonCommand(0, XBox360Controller::ControllerButton::ButtonA, new DecreaseHealthCommand(healthP1), CommandState::Down);
+		input.SetButtonCommand(0, XBox360Controller::ControllerButton::ButtonB, new IncreasePointsCommand(pointsP1), CommandState::Down);
+		input.SetButtonCommand(0, XBox360Controller::ControllerButton::ButtonX, new DecreaseHealthCommand(healthP2), CommandState::Down);
+		input.SetButtonCommand(0, XBox360Controller::ControllerButton::ButtonY, new IncreasePointsCommand(pointsP2), CommandState::Down);
+	}
+
+}
+
+std::shared_ptr<dae::GameObject> dae::Minigin::CreateHealthWithText(std::shared_ptr<dae::Scene> scene, int maxLives, std::shared_ptr<dae::Font> textFont, SDL_Color textColor, float xPosText, float yPosText) const
+{
+	std::shared_ptr<GameObject> healthObject = std::make_shared<GameObject>();
+	std::shared_ptr<HealthComponent> healthComp = std::make_shared<HealthComponent>(healthObject, maxLives);
+	healthObject->AddComponent(healthComp);
+	std::shared_ptr<TextComponent> healthTextComp = std::make_shared<TextComponent>(to_string(maxLives), textFont, healthObject);
+	healthComp->AddObserver(healthTextComp);
+	healthObject->AddComponent(healthTextComp);
+	healthObject->GetComponent<TextComponent>()->SetColor(textColor);
+	healthObject->GetComponent<TransformComponent>()->SetPosition(xPosText, yPosText);
+	scene->Add(healthObject);
+
+	return healthObject;
+}
+
+std::shared_ptr<dae::GameObject> dae::Minigin::CreatePointsWithText(std::shared_ptr<dae::Scene> scene, std::shared_ptr<dae::Font> textFont, SDL_Color textColor, float xPosText, float yPosText) const
+{
+	std::shared_ptr<GameObject> pointsObject = std::make_shared<GameObject>();
+	std::shared_ptr<PointsComponent> pointsComp = std::make_shared<PointsComponent>(pointsObject);
+	pointsObject->AddComponent(pointsComp);
+	std::shared_ptr<TextComponent> pointsTextComp = std::make_shared<TextComponent>("0", textFont, pointsObject);
+	pointsComp->AddObserver(pointsTextComp);
+	pointsObject->AddComponent(pointsTextComp);
+	pointsObject->GetComponent<TextComponent>()->SetColor(textColor);
+	pointsObject->GetComponent<TransformComponent>()->SetPosition(xPosText, yPosText);
+	scene->Add(pointsObject);
+
+	return pointsObject;
 }
