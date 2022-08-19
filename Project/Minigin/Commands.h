@@ -2,6 +2,7 @@
 #include <iostream>
 #include "Scene.h"
 #include "GameObject.h"
+#include "Sound_Systems.h"
 
 //Compontents
 #include "HealthComponent.h"
@@ -87,6 +88,16 @@ namespace dae
 
 	private:
 		std::shared_ptr<GameObject> linkedGameObject{ nullptr };
+	};
+
+	class PlaySound final : public Command
+	{
+	public:
+		void Execute() override
+		{
+			ServiceLocator::GetSoundSystem().PlaySound(0, 1);
+		}
+		void Undo() override {}
 	};
 }
 

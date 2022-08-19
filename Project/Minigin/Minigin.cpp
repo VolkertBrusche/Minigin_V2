@@ -71,6 +71,7 @@ void dae::Minigin::LoadGame() const
 	TestParenting();
 	TestInput();
 	TestObserverAndSubject();
+	TestSound();
 }
 
 void dae::Minigin::Cleanup()
@@ -248,4 +249,19 @@ std::shared_ptr<dae::GameObject> dae::Minigin::CreatePointsWithText(std::shared_
 	scene->Add(pointsObject);
 
 	return pointsObject;
+}
+
+void dae::Minigin::TestSound() const
+{
+#if _DEBUG
+	ServiceLocator::RegisterSoundSystem(std::make_shared<LoggingSoundSystem>(std::make_shared<SDLSoundSystem>()));
+#else
+	ServiceLocator::RegisterSoundSystem(std::make_shared<SDLSoundSystem>());
+#endif
+
+	ServiceLocator::GetSoundSystem().InitializeSoundSystem();
+	ServiceLocator::GetSoundSystem().RegisterSound(0, "../Data/15_Jingle_06.wav");
+
+	auto& input = InputManager::GetInstance();
+	input.SetButtonCommand(0, XBox360Controller::ControllerButton::DPadUp, new PlaySound(), CommandState::Down);
 }
