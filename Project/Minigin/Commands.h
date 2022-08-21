@@ -7,6 +7,8 @@
 //Compontents
 #include "HealthComponent.h"
 #include "PointsComponent.h"
+#include "TransformComponent.h"
+#include "TronTankComponent.h"
 
 namespace dae
 {
@@ -98,6 +100,118 @@ namespace dae
 			ServiceLocator::GetSoundSystem().PlaySound(0, 1);
 		}
 		void Undo() override {}
+	};
+
+	class MoveForward final : public Command
+	{
+	public:
+		MoveForward(std::shared_ptr<GameObject> gameObject) : Command{}, linkedGameObject{gameObject}
+		{
+			transformComp = gameObject->GetComponent<TransformComponent>();
+		}
+
+		void Execute() override
+		{
+			if (transformComp == nullptr)
+				transformComp = linkedGameObject->GetComponent<TransformComponent>();
+			else
+			{
+				prevPos = transformComp->GetPosition();
+				glm::vec3 newPos = prevPos;
+				newPos.y -= linkedGameObject->GetComponent<TronTankComponent>()->GetTankSpeed() * transformComp->GetElapsedSec();
+				transformComp->SetPosition(newPos.x, newPos.y, newPos.z);
+			}
+		}
+		void Undo() override {}
+
+	private:
+		std::shared_ptr<GameObject> linkedGameObject{ nullptr };
+		std::shared_ptr<TransformComponent> transformComp{ nullptr };
+		glm::vec3 prevPos{};
+	};
+
+	class MoveBackward final : public Command
+	{
+	public:
+		MoveBackward(std::shared_ptr<GameObject> gameObject) : Command{}, linkedGameObject{ gameObject }
+		{
+			transformComp = gameObject->GetComponent<TransformComponent>();
+		}
+
+		void Execute() override
+		{
+			if (transformComp == nullptr)
+				transformComp = linkedGameObject->GetComponent<TransformComponent>();
+			else
+			{
+				prevPos = transformComp->GetPosition();
+				glm::vec3 newPos = prevPos;
+				newPos.y += linkedGameObject->GetComponent<TronTankComponent>()->GetTankSpeed() * transformComp->GetElapsedSec();
+				transformComp->SetPosition(newPos.x, newPos.y, newPos.z);
+			}
+		}
+		void Undo() override {}
+
+	private:
+		std::shared_ptr<GameObject> linkedGameObject{ nullptr };
+		std::shared_ptr<TransformComponent> transformComp{ nullptr };
+		glm::vec3 prevPos{};
+	};
+
+	class MoveLeft final : public Command
+	{
+	public:
+		MoveLeft(std::shared_ptr<GameObject> gameObject) : Command{}, linkedGameObject{ gameObject }
+		{
+			transformComp = gameObject->GetComponent<TransformComponent>();
+		}
+
+		void Execute() override
+		{
+			if (transformComp == nullptr)
+				transformComp = linkedGameObject->GetComponent<TransformComponent>();
+			else
+			{
+				prevPos = transformComp->GetPosition();
+				glm::vec3 newPos = prevPos;
+				newPos.x -= linkedGameObject->GetComponent<TronTankComponent>()->GetTankSpeed() * transformComp->GetElapsedSec();
+				transformComp->SetPosition(newPos.x, newPos.y, newPos.z);
+			}
+		}
+		void Undo() override {}
+
+	private:
+		std::shared_ptr<GameObject> linkedGameObject{ nullptr };
+		std::shared_ptr<TransformComponent> transformComp{ nullptr };
+		glm::vec3 prevPos{};
+	};
+
+	class MoveRight final : public Command
+	{
+	public:
+		MoveRight(std::shared_ptr<GameObject> gameObject) : Command{}, linkedGameObject{ gameObject }
+		{
+			transformComp = gameObject->GetComponent<TransformComponent>();
+		}
+
+		void Execute() override
+		{
+			if (transformComp == nullptr)
+				transformComp = linkedGameObject->GetComponent<TransformComponent>();
+			else
+			{
+				prevPos = transformComp->GetPosition();
+				glm::vec3 newPos = prevPos;
+				newPos.x += linkedGameObject->GetComponent<TronTankComponent>()->GetTankSpeed() * transformComp->GetElapsedSec();
+				transformComp->SetPosition(newPos.x, newPos.y, newPos.z);
+			}
+		}
+		void Undo() override {}
+
+	private:
+		std::shared_ptr<GameObject> linkedGameObject{ nullptr };
+		std::shared_ptr<TransformComponent> transformComp{ nullptr };
+		glm::vec3 prevPos{};
 	};
 }
 

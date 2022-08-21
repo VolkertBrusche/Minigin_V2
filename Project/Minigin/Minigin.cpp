@@ -15,6 +15,7 @@
 #include "FPSComponent.h"
 #include "HealthComponent.h"
 #include "PointsComponent.h"
+#include "TronTankComponent.h"
 //================================
 
 #include "Commands.h"
@@ -66,12 +67,29 @@ void dae::Minigin::LoadGame() const
 {
 	std::shared_ptr<Scene> scene = SceneManager::GetInstance().CreateScene("Demo");
 
-	CreateBackground();
-	CreateFPSCounter();
-	TestParenting();
-	TestInput();
-	TestObserverAndSubject();
-	TestSound();
+	//CreateBackground();
+	//CreateFPSCounter();
+	//TestParenting();
+	//TestInput();
+	//TestObserverAndSubject();
+	//TestSound();
+
+	if (scene)
+	{
+		std::shared_ptr<GameObject> tankObject = std::make_shared<GameObject>();
+
+		const std::string hullAssetFile{"Player_Tank_Horizontal.png"};
+		const std::string turretAssetFile{"Tank_Commander.png"};
+		std::shared_ptr<TronTankComponent> tankComponent = std::make_shared<TronTankComponent>(tankObject, hullAssetFile, turretAssetFile, 200.f);
+		tankObject->AddComponent(tankComponent);
+		scene->Add(tankObject);
+
+		auto& input = InputManager::GetInstance();
+		input.SetButtonCommand(0, XBox360Controller::ControllerButton::DPadLeft, new MoveLeft(tankObject), CommandState::Pressed);
+		input.SetButtonCommand(0, XBox360Controller::ControllerButton::DPadRight, new MoveRight(tankObject), CommandState::Pressed);
+		input.SetButtonCommand(0, XBox360Controller::ControllerButton::DPadUp, new MoveForward(tankObject), CommandState::Pressed);
+		input.SetButtonCommand(0, XBox360Controller::ControllerButton::DPadDown, new MoveBackward(tankObject), CommandState::Pressed);
+	}
 }
 
 void dae::Minigin::Cleanup()

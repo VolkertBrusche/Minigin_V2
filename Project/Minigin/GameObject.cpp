@@ -12,10 +12,10 @@ void dae::GameObject::Update(float deltaTime)
 		pComponent->Update(deltaTime);
 	}
 
-	//for (auto pChildren : m_pChildren)
-	//{
-	//	pChildren->Update(deltaTime);
-	//}
+	for (auto pChildren : m_pChildren)
+	{
+		pChildren->Update(deltaTime);
+	}
 }
 
 void dae::GameObject::FixedUpdate(float fixedTimeStamp)
@@ -25,10 +25,10 @@ void dae::GameObject::FixedUpdate(float fixedTimeStamp)
 		pComponent->FixedUpdate(fixedTimeStamp);
 	}
 
-	//for (auto pChildren : m_pChildren)
-	//{
-	//	pChildren->FixedUpdate(fixedTimeStamp);
-	//}
+	for (auto pChildren : m_pChildren)
+	{
+		pChildren->FixedUpdate(fixedTimeStamp);
+	}
 }
 
 void dae::GameObject::Render() const
@@ -38,10 +38,10 @@ void dae::GameObject::Render() const
 		pComponent->Render();
 	}
 
-	//for (auto pChildren : m_pChildren)
-	//{
-	//	pChildren->Render();
-	//}
+	for (auto pChildren : m_pChildren)
+	{
+		pChildren->Render();
+	}
 }
 
 void dae::GameObject::AddComponent(std::shared_ptr<BaseComponent> component)

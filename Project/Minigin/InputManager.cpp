@@ -41,12 +41,6 @@ bool dae::InputManager::ProcessInput()
 						m_pCommands.pop_back();
 				}
 		}
-		//Quick way to undo commands
-		if (m_pXboxController[controllerIdx]->IsDown(XBox360Controller::ControllerButton::DPadDown) && m_pCommands.size() > 0)
-		{
-			m_pCommands.back()->Undo();
-			m_pCommands.pop_back();
-		}
 
 		//Quick and dirty solution for ending the program
 		if (m_pXboxController[controllerIdx]->IsPressed(XBox360Controller::ControllerButton::Back))

@@ -12,8 +12,8 @@ namespace dae
 		{
 			DPadUp = 0x0001,
 			DPadDown = 0x0002,
-			DPadLeft = 0x0003,
-			DPadRight = 0x0004,
+			DPadLeft = 0x0004,
+			DPadRight = 0x0008,
 
 			Start = 0x0010,
 			Back = 0x0020,
